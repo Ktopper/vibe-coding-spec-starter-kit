@@ -68,7 +68,7 @@ cp templates/.cursorrules-utility .cursorrules
 
 - **Starting:** Prompt #1 (The Architect)
 - **Stuck:** Prompt #21 (Context Refresh)
-- **Refactoring:** Prompt #22 (System Poet)
+- **Refactoring:** Prompt #22 (System ninja)
 - **Before launch:** Use pre-launch-security.md
 
 ---
@@ -107,7 +107,7 @@ cp templates/.cursorrules-utility .cursorrules
 - .cursorrules enforces the law
 - AI must follow both exactly
 
-### The System Poet Mindset
+### The System ninja Mindset
 - You orchestrate AI tools
 - You don't write the code
 - You verify the results
@@ -196,7 +196,7 @@ All apps work on free tiers. Ship fast, iterate faster.
 - ✅ You use Prompt #21 when AI drifts
 - ✅ You verify every feature works
 - ✅ You run security checks before shipping
-- ✅ You feel like a System Poet (orchestrator)
+- ✅ You feel like a System ninja (orchestrator)
 
 ---
 
@@ -216,7 +216,7 @@ All apps work on free tiers. Ship fast, iterate faster.
 **You have everything you need to:**
 - Build production-ready apps with AI
 - Ship secure, scalable micro-apps
-- Become a System Poet (not a coder)
+- Become a System ninja (not a coder)
 - Avoid the common mistakes
 - Launch faster than ever before
 

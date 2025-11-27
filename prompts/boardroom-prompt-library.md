@@ -484,7 +484,7 @@ Only proceed after confirming understanding.
 
 ---
 
-### Prompt #22: The System Poet
+### Prompt #22: The System ninja
 **When to use:** Feeling overwhelmed or lost  
 **Purpose:** Step back and reframe
 

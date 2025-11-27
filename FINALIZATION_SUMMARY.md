@@ -76,7 +76,7 @@
 
 1. **boardroom-prompt-library.md** - The Prompt Arsenal
    - ✅ UPDATED: Added Prompt #21 (Context Refresh - Anti-Drift)
-   - ✅ UPDATED: Added Prompt #22 (Refactoring - System Poet Style)
+   - ✅ UPDATED: Added Prompt #22 (Refactoring - System ninja Style)
    - Now contains 22 prompts total (was 20)
    - Organized into 7 parts: Strategic, Database, Implementation, Debug, Polish, Security, Meta
 
@@ -164,7 +164,7 @@
    - Solves "AI starts ignoring my rules" problem
 
 10. **Refactoring Framework**
-    - Added Prompt #22 (System Poet Refactoring)
+    - Added Prompt #22 (System ninja Refactoring)
     - Code works but messy → clarity without breaking
     - Tests-first approach, behavior preservation
 
@@ -285,7 +285,7 @@ All improvements map directly to book content:
 - **Framer Motion exception** → Chapter 6 ("Vibe Layer", "Drift Bug" fix)
 - **Thumb Zone rule** → Chapter 9 (Mobile UX, ergonomics)
 - **Context refresh prompt** → Chapter 5 (Context Engineering, Discovery Loop)
-- **Refactoring prompt** → Chapter 5 (System Poet mindset)
+- **Refactoring prompt** → Chapter 5 (System ninja mindset)
 - **Zod validation** → Chapter 10 (Security practices)
 - **JTBD examples** → Chapter 9 (Design methodology)
 - **App Blueprints** → Chapters 6, 7, 8 (complete implementations)

@@ -119,7 +119,7 @@ Constraints:
 ```
 - Use when code works but is messy
 - Constrains to clarity improvements only
-- Follows "System Poet" orchestration mindset
+- Follows "System ninja" orchestration mindset
 
 **Result:** Now 22 prompts total, covering all development scenarios including context management and refactoring.
 

@@ -244,7 +244,7 @@ Pick the one that excites you most → Ship it → Build others
 → Use Prompt #21 (Context Refresh) from the prompt library
 
 ### If You're Debugging for >30 Minutes
-→ Use Prompt #22 (System Poet) to step back and replan
+→ Use Prompt #22 (System ninja) to step back and replan
 
 ### If You Don't Know Which to Build
 → Build Focus Recipes first. It's the best foundation.
