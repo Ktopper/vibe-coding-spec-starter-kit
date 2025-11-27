@@ -1,0 +1,294 @@
+# .cursorrules for Utility Tools (Client-Side Only)
+
+## 1. IDENTITY
+
+You are building [Your Utility Tool Name] - a focused, single-purpose tool.
+You value simplicity, speed, and zero friction.
+This is a utility tool, not a platform. Do one thing extremely well.
+
+## 2. TECH STACK (Time-Lock)
+
+### Core
+- React 19
+- TypeScript 5.x
+- Vite (for fast dev/build)
+
+### Styling
+- Tailwind CSS 4.x
+- NO component libraries (keep bundle small)
+- Lucide React for icons only
+- **EXCEPTION: Use Framer Motion for complex animations**
+
+### Animation Libraries
+```typescript
+// For simple transitions: Use CSS
+.button {
+  transition: all 0.2s ease;
+}
+
+// For complex animations: Use Framer Motion
+import { motion } from 'framer-motion';
+
+<motion.div
+  initial={{ opacity: 0, scale: 0.8 }}
+  animate={{ opacity: 1, scale: 1 }}
+  exit={{ opacity: 0, scale: 0.8 }}
+  transition={{ duration: 0.3 }}
+>
+  {content}
+</motion.div>
+```
+
+**Why Framer Motion is Allowed:**
+- Handles complex animation sequences
+- Provides physics-based animations (spring, inertia)
+- Manages animation state cleanly
+- Small bundle impact for significant UX improvement
+
+### Storage
+- localStorage for persistence
+- NO database, NO backend, NO auth
+
+### Deployment
+- Vercel / Netlify (static hosting)
+
+## 3. PHILOSOPHY: CLIENT-SIDE ONLY
+
+This is a **pure client-side utility tool**. That means:
+- ALL logic runs in the browser
+- NO server, NO API routes, NO backend
+- Data persists in localStorage only
+- Works offline by default
+- Privacy-first: user data never leaves their device
+
+## 4. GUARDRAILS
+
+NEVER:
+- Add a backend or database
+- Implement user authentication
+- Make network requests (unless explicitly for external APIs)
+- Store data in the cloud
+- Add unnecessary dependencies
+
+## 5. BEHAVIOR (Utility Tool Patterns)
+
+### Component Structure
+```
+/src
+  /components
+    Calculator.tsx      # Main tool logic
+    Controls.tsx        # User controls
+    Results.tsx         # Output display
+  /lib
+    /math.ts           # Pure functions for logic
+    /storage.ts        # localStorage utilities
+    /types.ts          # Type definitions
+  App.tsx              # Root component
+  main.tsx             # Entry point
+```
+
+### Code Principles
+- Keep it simple: Prefer 100 lines of clear code over 50 lines of clever code
+- Pure functions: All business logic should be pure, testable functions
+- Minimal state: Use React state only when necessary
+- No abstractions: Don't build frameworks, build features
+
+### State Management
+- Use useState for UI state
+- Use useReducer for complex state logic
+- localStorage for persistence
+- NO Redux, NO Zustand, NO external state managers
+
+### Performance
+- Bundle size < 100kb (gzipped)
+- Time to interactive < 2 seconds
+- 60fps interactions
+- Lazy load heavy computations
+
+### Persistence Pattern
+```typescript
+// Save on change
+const handleChange = (value: string) => {
+  setValue(value);
+  localStorage.setItem('key', value);
+};
+
+// Load on mount
+useEffect(() => {
+  const saved = localStorage.getItem('key');
+  if (saved) setValue(saved);
+}, []);
+```
+
+## 6. ANTI-PATTERNS
+
+❌ NEVER add user accounts "for future use"
+  → This is a utility tool, not a SaaS
+
+❌ NEVER make network requests without explicit reason
+  → This tool works offline
+
+❌ NEVER use complex state management
+  → useState is enough for utility tools
+
+❌ NEVER add features "just in case"
+  → Scope creep kills utility tools
+
+❌ NEVER use setInterval for precise timing
+  → Use Date.now() delta tracking
+
+❌ NEVER store sensitive data in localStorage
+  → This tool shouldn't handle sensitive data
+
+❌ NEVER skip error boundaries
+  → Catch errors gracefully, don't crash
+
+❌ NEVER add analytics without user consent
+  → Privacy-first means no tracking by default
+
+## 7. UI/UX PRINCIPLES
+
+### Instant Feedback
+- NO loading spinners (everything is instant)
+- Optimistic UI updates
+- Smooth animations (CSS transitions)
+- Clear visual feedback for actions
+
+### Minimal UI
+- Large, obvious controls (48x48px minimum)
+- High contrast (accessible by default)
+- One primary action per screen
+- NO menus, NO settings, NO chrome
+
+### Mobile-First
+- Design for thumb zone (bottom 30% of screen)
+- Touch targets 48x48px minimum
+- Works in portrait and landscape
+- NO horizontal scrolling
+
+### The Thumb Zone Rule
+**Interactive elements MUST be in the bottom 30% of the viewport for mobile ergonomics.**
+
+Why: Users hold phones with one hand. The thumb naturally reaches the bottom third of the screen. Placing primary actions there reduces strain and increases speed.
+
+```css
+/* Good: Primary action in thumb zone */
+.primary-button {
+  @apply fixed bottom-8 left-1/2 -translate-x-1/2;
+}
+
+/* Bad: Primary action at top */
+.primary-button-bad {
+  @apply fixed top-4 left-1/2 -translate-x-1/2;
+}
+```
+
+**Layout Priority (Top to Bottom):**
+1. **Top 40%**: Display information, status, results
+2. **Middle 30%**: Secondary actions, settings
+3. **Bottom 30%**: Primary action, navigation (THUMB ZONE)
+
+### Zero Configuration
+- Works immediately (no setup)
+- Smart defaults
+- Progressive disclosure (hide complexity)
+- NO onboarding flow
+
+## 8. MATH/LOGIC PATTERNS
+
+### Pure Functions First
+```typescript
+// Good: Pure function, easily testable
+function calculateTip(amount: number, percentage: number): number {
+  return Math.round(amount * (percentage / 100) * 100) / 100;
+}
+
+// Bad: Coupled to UI, hard to test
+function handleTipCalculation() {
+  const amount = parseFloat(amountInput.value);
+  const percentage = parseFloat(percentageInput.value);
+  resultElement.textContent = (amount * percentage / 100).toString();
+}
+```
+
+### Validation
+```typescript
+// Always validate user input
+function validateInput(value: string): number | null {
+  const num = parseFloat(value);
+  if (isNaN(num) || num < 0) return null;
+  return num;
+}
+```
+
+### Precision
+```typescript
+// Handle floating point precision
+function roundToTwo(num: number): number {
+  return Math.round(num * 100) / 100;
+}
+```
+
+## 9. ACCESSIBILITY CHECKLIST
+
+- [ ] All interactive elements are keyboard accessible
+- [ ] Focus states are clearly visible
+- [ ] Color is not the only indicator of state
+- [ ] Text has 4.5:1 contrast ratio minimum
+- [ ] Font size >= 16px (prevents mobile zoom)
+- [ ] Alt text on all images
+- [ ] Aria labels on icon-only buttons
+
+## 10. DEPLOYMENT
+
+### Build Optimization
+```json
+// vite.config.ts
+{
+  build: {
+    minify: 'terser',
+    rollupOptions: {
+      output: {
+        manualChunks: undefined // Single bundle for small apps
+      }
+    }
+  }
+}
+```
+
+### Pre-Deploy Checklist
+- [ ] Bundle size < 100kb gzipped
+- [ ] Lighthouse score > 90 (Performance, Accessibility, Best Practices)
+- [ ] Works offline (service worker if needed)
+- [ ] Tested on mobile device (not just emulator)
+- [ ] localStorage cleared gracefully on errors
+- [ ] No console errors or warnings
+
+## 11. EXAMPLES OF GOOD UTILITY TOOLS
+
+Study these for inspiration:
+- **Tip Calculator:** One input, instant result, dead simple
+- **Color Picker:** Visual feedback, copy to clipboard
+- **Timer/Stopwatch:** Precise, reliable, minimal UI
+- **Unit Converter:** Clear input/output, common units first
+- **Password Generator:** Instant, configurable, copy button
+
+## 12. THE UTILITY TOOL MINDSET
+
+Ask yourself before adding ANYTHING:
+1. Does this make the core task easier? (If no → don't add)
+2. Can I do this without adding dependencies? (If yes → do it)
+3. Will this work offline? (If no → reconsider)
+4. Can a user figure this out in 5 seconds? (If no → simplify)
+
+**Remember: The best utility tool is the one you don't have to explain.**
+
+---
+
+**Build the simplest thing that could possibly work. Then stop.**
+
+INSTRUCTIONS FOR USE:
+1. Rename this file to .cursorrules (with the dot at the beginning)
+2. Place it in your project root directory
+3. Customize [Your Utility Tool Name] and any project-specific rules
+4. Your AI coding assistant will automatically read this file
