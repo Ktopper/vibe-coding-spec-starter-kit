@@ -320,7 +320,7 @@ if st.button("🔥 Roast Me", type="primary", use_container_width=True):
 
 ### Initial Build Prompt
 ```
-Read @spec.md for full requirements.
+Read this @spec.md for full requirements.
 Reference @.cursorrules for code standards.
 
 Build a Streamlit app with:

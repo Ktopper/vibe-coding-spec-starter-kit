@@ -2,16 +2,14 @@
 
 ## 1. App Identity
 
-### Core Concept
-A "playlist" timer for deep work. Users select a Recipe (a sequence of timed phases) and the app guides them through it.
+**Core Concept**  
+A "playlist" timer for deep work. Users select a Recipe (a sequence of timed phases) and the app guides them through it. Think Headspace meets Pomodoro—calm, deliberate, designed for focus.
 
-Vibe: High-end, calm, fluid (Headspace meets Pomodoro).
+**Target User**  
+Knowledge workers who struggle with task initiation and need structure to enter flow state. Writers, developers, designers who know what deep work feels like but need help getting there.
 
-### Target User
-Knowledge workers who struggle with task initiation and need structure to enter a flow state.
-
-### Value Proposition
-Unlike standard timers that just count down, Focus Recipes orchestrates energy levels through distinct phases (Focus, Decompress, Review).
+**Value Proposition**  
+Unlike standard timers that just count down, Focus Recipes orchestrates your energy through distinct phases: Focus, Decompress, Review. Each phase has its own duration, color, and rhythm. The timer doesn't just measure time—it conducts your attention.
 
 ---
 
@@ -21,235 +19,323 @@ Unlike standard timers that just count down, Focus Recipes orchestrates energy l
 ```typescript
 {
   id: string;
-  name: string;  // e.g., "The 90-Minute Deep Dive"
-  description: string;  // e.g., "Perfect for morning creative work"
+  name: string;
+  description: string;
   phases: Phase[];
 }
 ```
 
+**Example:** "The 90-Minute Deep Dive" with phases for Warm Up, Deep Work, Decompress.
+
 ### Phase
 ```typescript
 {
-  name: string;  // e.g., "Deep Work", "Coffee Break"
+  name: string;
   duration_seconds: number;
-  theme_color: string;  // hex code, e.g., "#4F46E5"
+  theme_color: string;  // hex code
   animation_type: 'breathing' | 'pulse' | 'static';
 }
 ```
 
-### Example Hardcoded Recipes
-```typescript
-const RECIPES = [
-  {
-    id: 'pomodoro',
-    name: 'Classic Pomodoro',
-    description: 'The standard 25-5-5-5 cycle',
-    phases: [
-      { name: 'Focus', duration_seconds: 1500, theme_color: '#EF4444', animation_type: 'breathing' },
-      { name: 'Break', duration_seconds: 300, theme_color: '#10B981', animation_type: 'pulse' },
-      { name: 'Focus', duration_seconds: 1500, theme_color: '#EF4444', animation_type: 'breathing' },
-      { name: 'Long Break', duration_seconds: 900, theme_color: '#3B82F6', animation_type: 'static' }
-    ]
-  },
-  {
-    id: 'deep-dive',
-    name: 'The 90-Minute Deep Dive',
-    description: 'Extended focus for complex problems',
-    phases: [
-      { name: 'Warm Up', duration_seconds: 600, theme_color: '#F59E0B', animation_type: 'pulse' },
-      { name: 'Deep Work', duration_seconds: 5400, theme_color: '#8B5CF6', animation_type: 'breathing' },
-      { name: 'Decompress', duration_seconds: 900, theme_color: '#10B981', animation_type: 'pulse' }
-    ]
-  }
-];
-```
+**Example:** { name: 'Deep Work', duration_seconds: 5400, theme_color: '#8B5CF6', animation_type: 'breathing' }
+
+### Hardcoded Recipes (No Database)
+
+**Recipe 1: Classic Pomodoro**
+- Focus (25 min, red, breathing)
+- Break (5 min, green, pulse)
+- Focus (25 min, red, breathing)
+- Long Break (15 min, blue, static)
+
+**Recipe 2: The 90-Minute Deep Dive**
+- Warm Up (10 min, amber, pulse)
+- Deep Work (90 min, purple, breathing)
+- Decompress (15 min, green, pulse)
+
+**Recipe 3: Sprint & Reflect**
+- Sprint (45 min, indigo, breathing)
+- Reflect (10 min, teal, static)
+- Break (5 min, green, pulse)
 
 ---
 
-## 3. User Stories (What Happens, Not How)
+## 3. User Stories
 
-### Feature 1: The Engine
-**User Action:** User clicks "Start" on a recipe.
+### Story 1: Starting a Focus Session
 
-**System Response:** 
-- Timer begins counting down from first phase duration
-- Background color shifts to phase theme color
-- Text breathes gently (Framer Motion animation)
-- Phase name displays prominently
-
-**Success Criteria:** 
-- Timer tracks time using Date.now() delta (no drift)
-- Auto-transitions to next phase when current phase completes
-- Plays subtle sound on phase transition
-- Shows progress (e.g., "Phase 2 of 4")
-
-### Feature 2: The Thumb Zone
-**User Action:** User holds phone in one hand.
-
-**System Response:** 
-- All primary controls (Pause, Skip, Reset) are in the bottom 30% of the screen
-- Touch targets are 48x48px minimum
-- Visual feedback on tap (scale animation)
-
-**Success Criteria:** 
-- User can control app without shifting grip
-- No accidental taps (adequate spacing)
-- Works in both portrait and landscape
-
-### Feature 3: Persistence
-**User Action:** User closes browser mid-session.
+**User Action:** User opens app, sees recipe grid, taps "The 90-Minute Deep Dive"
 
 **System Response:**
-- On return, show "Resume Session?" dialog
-- If yes, restore to exact point in recipe
-- If no, clear state and show recipe selection
+- Timer starts immediately (no confirmation dialog)
+- Background color shifts to first phase theme (amber)
+- Phase name displays large and centered
+- Countdown shows remaining time
+- Gentle breathing animation begins
+
+**Success Criteria:**
+- Time-to-value under 10 seconds (open → focus)
+- Timer uses Date.now() delta tracking (no drift)
+- Auto-transitions to next phase at 0:00
+- Visual feedback on every phase change
+- Progress indicator shows current position (Phase 1 of 3)
+
+### Story 2: Mid-Session Control
+
+**User Action:** During deep work phase, user needs to pause
+
+**System Response:**
+- Tap pause button (bottom of screen)
+- Timer freezes, animation stops
+- "Paused" state is obvious
+- Tap again to resume from exact moment
+
+**Success Criteria:**
+- All controls in bottom 30% of screen (thumb zone)
+- Touch targets minimum 48x48px
+- Pause state persists if user switches tabs
+- No accidental taps (adequate spacing between buttons)
+
+### Story 3: Session Interruption
+
+**User Action:** User closes browser mid-session to take urgent call
+
+**System Response:**
+- On return, show simple prompt: "Resume session?"
+- If yes: Restore exact point in recipe
+- If no: Clear state, show recipe selector
 
 **Success Criteria:**
 - Uses localStorage to persist state
-- Restores recipe ID, phase index, and time remaining
-- Handles edge case of localStorage being full
+- Stores recipe ID, phase index, exact timestamp
+- Handles localStorage full gracefully (clear old data)
+- Works offline (no server needed)
 
 ---
 
 ## 4. Technical Stack & Constraints
 
 ### Stack
-- **Context File:** `.cursorrules-utility`
-- **Framework:** React 19 + Vite (Client-side only)
+- **Framework:** React 19 + Vite
 - **Language:** TypeScript 5.x
-- **Styling:** Tailwind CSS 4.0 + Framer Motion
+- **Styling:** Tailwind CSS 4.0
+- **Animation:** Framer Motion
 - **Icons:** Lucide React
-- **Storage:** localStorage (for session persistence)
-- **Deployment:** Vercel / Netlify (static hosting)
+- **Storage:** localStorage (session persistence only)
+- **Deployment:** Vercel or Netlify (static hosting)
 
-### Technical Constraints (What We MUST Do)
-- ✅ MUST work offline (no server, no API calls)
-- ✅ MUST use Date.now() delta tracking for timer precision
-- ✅ MUST implement Framer Motion for breathing animations
-- ✅ MUST follow Thumb Zone principle (controls in bottom 30%)
-- ✅ MUST have touch targets of 48x48px minimum
+### Technical Constraints (MUST DO)
 
-### Anti-Patterns (What We NEVER Do)
-- ❌ NEVER use setInterval for time tracking. ALWAYS use Date.now() delta.
-- ❌ NEVER use complex state managers (Redux, Zustand). Use React Context or simple State.
-- ❌ NEVER add user accounts (this is a utility tool, not a SaaS)
-- ❌ NEVER make network requests (tool must work offline)
-- ❌ NEVER store sensitive data in localStorage
+**MUST work offline**  
+No server. No API calls. Pure client-side. This is a utility tool, not a web service.
+
+**MUST use Date.now() delta tracking**  
+Timer precision requires delta calculation. setInterval drifts. Date.now() doesn't.
+
+**MUST implement breathing animations**  
+Framer Motion for smooth, calming visual rhythm. Not decorative—functional. Reinforces focus state.
+
+**MUST follow Thumb Zone principle**  
+All primary controls in bottom 30% of screen. All touch targets 48x48px minimum. One-handed operation on mobile.
+
+**MUST handle browser backgrounding**  
+Timer continues when tab loses focus. Use Page Visibility API if implementing auto-pause feature.
+
+### Anti-Patterns (NEVER DO)
+
+**NEVER use setInterval for time tracking**  
+Reason: Browser throttles inactive tabs, causing drift. Always use Date.now() delta.
+
+**NEVER add complex state management**  
+Reason: React Context or simple useState is sufficient. No Redux. No Zustand. Overkill for this scope.
+
+**NEVER require user accounts**  
+Reason: This is a utility tool, not a SaaS. Authentication would violate "works offline" and add friction.
+
+**NEVER make network requests**  
+Reason: Tool must work on airplane, in basement, during internet outage. Zero dependencies on connectivity.
+
+**NEVER store sensitive data in localStorage**  
+Reason: localStorage is not encrypted. Timer state is fine. Personal notes are not.
 
 ---
 
-## 5. Non-Goals (What This App Is NOT)
+## 5. Non-Goals
 
-### Explicitly Out of Scope
-- [ ] User authentication / accounts
-- [ ] Cloud sync of recipes across devices
-- [ ] Social features / sharing
-- [ ] Statistics dashboard / analytics
-- [ ] Notifications (push notifications)
-- [ ] Mobile native app (web-first)
+### Out of Scope
 
-### Why These Are Out:
-This is a **utility tool**, not a platform. Adding these features would:
-- Require backend infrastructure (increases complexity)
-- Slow down time-to-value (now < 10 seconds)
-- Violate the "works offline" principle
-- Add maintenance burden
+**User authentication & accounts**  
+Why: Adds complexity, requires backend, violates offline principle. Users don't need identity for a timer.
+
+**Cloud sync across devices**  
+Why: Requires backend, authentication, conflict resolution. Beyond scope of utility tool.
+
+**Social features & sharing**  
+Why: This is a personal focus tool, not a social platform. Sharing sessions adds no value to core job.
+
+**Statistics dashboard & analytics**  
+Why: Would require data persistence, charting libraries, analysis features. Belongs in SaaS version, not utility.
+
+**Push notifications**  
+Why: Browser notification APIs are unreliable. Audio cues at phase transitions are sufficient.
+
+**Native mobile app**  
+Why: Web-first approach. PWA capabilities sufficient. Native app is 10x more maintenance.
+
+### Why These Are Out
+
+This is a **utility tool**. Adding these features would:
+- Require backend infrastructure (against offline principle)
+- Slow time-to-value from 10 seconds to 10 minutes
+- Add ongoing maintenance burden
+- Transform simple tool into complex platform
+
+If user needs these features, they need a different product.
 
 ---
 
 ## 6. Edge Cases & Guardrails
 
-### What Happens When...
-- **User closes browser mid-session?** → Persist to localStorage, offer resume on return
-- **User has no internet?** → App works perfectly (client-side only)
-- **User switches tabs?** → Timer continues in background (use Page Visibility API for pause option)
-- **User's phone locks?** → Timer continues but cannot play audio (browser limitation, document in UI)
-- **localStorage is full?** → Gracefully degrade, show toast: "Cannot save progress"
+### Scenario: User closes browser mid-session
 
-### Error States
-- **Timer drift detected** (rare): Reset to server time if available, or continue with best effort
-- **Animation lag**: Reduce animation complexity on low-end devices (detect via performance API)
-- **Invalid localStorage data**: Clear and start fresh, don't crash
+**Expected Behavior:** Persist state to localStorage. On return, show "Resume session?" with Yes/No options.
+
+**Implementation:** Save { recipeId, phaseIndex, startTimestamp, isPaused } every second.
+
+### Scenario: User has no internet connection
+
+**Expected Behavior:** App works perfectly. All assets cached. No error messages about connectivity.
+
+**Implementation:** Vite builds everything into static bundle. No external dependencies at runtime.
+
+### Scenario: User switches to another tab
+
+**Expected Behavior:** Timer continues counting in background. Optional: Detect via Page Visibility API and show "Paused (backgrounded)" state.
+
+**Implementation:** Date.now() delta continues regardless of tab focus. Add visibility listener if auto-pause desired.
+
+### Scenario: User's phone locks during session
+
+**Expected Behavior:** Timer continues. Audio notifications won't play (browser limitation). Document this in UI: "Keep screen on for audio cues."
+
+**Implementation:** Can't override iOS/Android screen lock. Accept this limitation.
+
+### Scenario: localStorage quota exceeded
+
+**Expected Behavior:** Show toast: "Cannot save progress. Clear browser data." Don't crash app.
+
+**Implementation:** Wrap localStorage.setItem in try/catch. Log error. Continue functioning without persistence.
+
+### Scenario: Timer drift detected (rare)
+
+**Expected Behavior:** Continue with best-effort accuracy. Don't reset or show error.
+
+**Implementation:** Date.now() delta is already drift-proof. Only edge case is system clock changes (very rare).
 
 ---
 
 ## 7. Design Philosophy
 
 ### Visual Aesthetic
-**Minimalist brutalism**: black, white, one accent color per phase. High contrast. Large touch targets. Full-screen timer display.
 
-**Inspiration:** Headspace (calm), Apple Timer (simplicity), Arc browser (polish)
+**Minimalist brutalism:** Black text, white backgrounds, one bold accent color per phase. High contrast. Large typography. Zero decorative elements.
 
-### Interaction Patterns
-- **Immediate feedback**: Every tap shows visual response (scale, color change)
-- **No confirmation dialogs**: Use undo instead of "Are you sure?"
-- **Progressive disclosure**: Hide complexity until needed (settings behind tap)
-- **Breathing animations**: Reinforce calm/focus state
+**Inspiration:** 
+- Headspace (calm, focused)
+- Apple Timer (simple, clear)
+- Arc browser (polished, delightful)
+
+### Interaction Principles
+
+**Immediate feedback:** Every tap shows visual response (scale animation, color shift). No dead clicks.
+
+**No confirmation dialogs:** Use undo patterns instead of "Are you sure?" interruptions. If user taps Reset, just reset—provide brief undo window.
+
+**Progressive disclosure:** Hide advanced features until needed. Settings behind single tap. No overwhelming feature lists.
+
+**Breathing animations:** Reinforce calm state. Not decorative—functional. Slow, gentle rhythm matches focus breathing.
 
 ### Performance Targets
+
 - Initial load: < 2 seconds
 - Interaction response: < 100ms
 - Bundle size: < 100kb gzipped
-- 60fps animations
+- Animations: 60fps minimum
+- Lighthouse score: > 90 across all categories
 
 ---
 
-## 8. Success Metrics (How We Know It Works)
+## 8. Success Metrics
 
-### Technical Success
-- [ ] App loads without errors
+### Technical Success Criteria
+
+- [ ] App loads without console errors
 - [ ] Timer accuracy within ±1 second over 60 minutes
-- [ ] No console errors or warnings
-- [ ] Lighthouse score > 90 (Performance, Accessibility)
-- [ ] Works offline (test with network disabled)
+- [ ] No console warnings in production build
+- [ ] Lighthouse Performance score > 90
+- [ ] Lighthouse Accessibility score > 90
+- [ ] Works offline (test with DevTools network disabled)
+- [ ] Animations maintain 60fps on mobile
 
-### User Success
-- [ ] User can start a recipe in < 10 seconds
-- [ ] User can control timer one-handed on mobile
+### User Success Criteria
+
+- [ ] User starts focus session in < 10 seconds
+- [ ] User controls timer one-handed on mobile
 - [ ] Timer completes full recipe without drift
-- [ ] User understands current phase without reading labels
+- [ ] User understands current phase without reading
+- [ ] Phase transitions feel smooth, not jarring
+- [ ] User can pause/resume without confusion
 
 ---
 
 ## 9. Implementation Notes
 
-### The Timer Math (Critical)
-```typescript
-// ❌ WRONG: setInterval drifts over time
-let remaining = 1500;
-setInterval(() => remaining--, 1000);
+### The Timer Engine (Critical)
 
-// ✅ CORRECT: Date.now() delta tracking
+**WRONG approach:**
+```typescript
+let remaining = 1500;
+setInterval(() => remaining--, 1000);  // DRIFTS over time
+```
+
+**CORRECT approach:**
+```typescript
 const startTime = Date.now();
-const endTime = startTime + (1500 * 1000);
+const endTime = startTime + (durationSeconds * 1000);
 
 function updateTimer() {
   const now = Date.now();
   const remaining = Math.max(0, Math.floor((endTime - now) / 1000));
-  // Update UI
+  
   if (remaining > 0) {
     requestAnimationFrame(updateTimer);
+  } else {
+    transitionToNextPhase();
   }
 }
 ```
 
+**Why this works:** Date.now() is immune to browser throttling. Always accurate.
+
 ### The Breathing Animation
+
 ```typescript
 <motion.div
-  animate={{
-    scale: [1, 1.05, 1],
-  }}
+  animate={{ scale: [1, 1.05, 1] }}
   transition={{
     duration: 4,
     repeat: Infinity,
     ease: "easeInOut"
   }}
 >
-  {phaseDisplay}
+  <h1>{phaseName}</h1>
+  <p>{formatTime(remaining)}</p>
 </motion.div>
 ```
 
+**Design note:** 4-second cycle matches natural breathing rhythm. Don't speed this up.
+
 ### LocalStorage Schema
+
 ```typescript
 interface TimerState {
   recipeId: string;
@@ -258,59 +344,107 @@ interface TimerState {
   isPaused: boolean;
 }
 
-// Save
+// Save on every tick
 localStorage.setItem('timer-state', JSON.stringify(state));
 
-// Load
+// Load on mount
 const saved = localStorage.getItem('timer-state');
 const state = saved ? JSON.parse(saved) : null;
 ```
 
 ---
 
-## 10. Prompts for Building
+## 10. Build Prompts
 
-### Initial Build Prompt (to Carpenter AI in IDE)
+### Prompt 1: Build the Engine First
+
 ```
-Read @spec.md for full requirements.
-Reference @.cursorrules for code standards.
+Read this entire spec.md file.
+Reference .cursorrules-utility for code standards.
 
-First, create /lib/recipes.ts with the hardcoded RECIPES array from the spec.
+First task: Create /lib/recipes.ts with the hardcoded RECIPES array.
+Include all three recipes from section 2 (Pomodoro, Deep Dive, Sprint & Reflect).
 
-Then, create a custom React hook called useRecipeTimer that:
-1. Accepts a Recipe object
-2. Tracks current phase index and time remaining using Date.now() delta
-3. Auto-transitions to next phase when timer hits zero
-4. Exposes controls: start, pause, reset, skip
-5. Persists state to localStorage
+Second task: Create a custom React hook called useRecipeTimer.
+This hook should:
+- Accept a Recipe object as input
+- Track current phase index
+- Calculate time remaining using Date.now() delta (NOT setInterval)
+- Auto-transition to next phase when timer reaches zero
+- Expose these controls: start(), pause(), reset(), skipPhase()
+- Persist state to localStorage on every update
 
-Do NOT build UI components yet. We're building the engine first.
-Test the hook in isolation before proceeding.
+Do NOT build UI components yet.
+Test the hook in isolation with console logs.
+Show me the hook implementation when done.
 ```
 
-### UI Build Prompt
+### Prompt 2: Build the UI Components
+
 ```
-Now build the UI components:
+Now build three UI components:
 
-1. RecipeSelector: Grid of recipe cards (name, description, duration)
-2. TimerDisplay: Full-screen phase name, countdown, progress indicator
-3. Controls: Bottom-fixed bar with Pause, Skip, Reset (Thumb Zone compliant)
+1. RecipeSelector component
+   - Grid layout of recipe cards
+   - Show recipe name, description, total duration
+   - Tap to select and start
 
-Use Framer Motion for breathing animation on active phase.
-Follow Tailwind mobile-first approach.
-All touch targets must be 48x48px minimum.
+2. TimerDisplay component
+   - Full-screen phase name (large, centered)
+   - Countdown timer (formatted as MM:SS)
+   - Progress indicator (Phase X of Y)
+   - Apply phase theme_color to background
+   - Implement Framer Motion breathing animation
+
+3. Controls component
+   - Fixed to bottom of screen (Thumb Zone)
+   - Three buttons: Pause/Resume, Skip, Reset
+   - Touch targets 48x48px minimum
+   - Visual feedback on tap (scale animation)
+
+Use Tailwind mobile-first approach.
+Follow Thumb Zone principle (controls in bottom 30%).
+Apply Framer Motion breathing to active timer display.
+```
+
+### Prompt 3: Add Polish
+
+```
+Add these finishing touches:
+
+1. Resume Session Dialog
+   - Check localStorage on mount
+   - If saved state exists, show modal: "Resume session?"
+   - Yes button restores exact timer state
+   - No button clears localStorage and shows selector
+
+2. Phase Transition Effects
+   - Smooth color transitions (300ms ease)
+   - Brief haptic feedback if supported
+   - Optional: Subtle sound (single chime)
+
+3. Accessibility
+   - Add ARIA labels to all buttons
+   - Ensure color contrast > 4.5:1
+   - Test keyboard navigation
+   - Add reduced-motion media query support
+
+4. Error Handling
+   - Wrap localStorage in try/catch
+   - Show toast if storage fails
+   - Gracefully degrade to no-persistence mode
 ```
 
 ---
 
-## Notes for the AI Builder
+## Notes for the AI
 
-**This spec is your constitution. When in doubt, refer back to this document.**
+This spec is your contract. When in doubt, refer back to this document.
 
-- If a feature isn't explicitly listed here, don't build it.
-- If a constraint says "NEVER," that means never.
-- If something is unclear, ask for clarification before implementing.
+**If a feature isn't explicitly listed here, don't build it.**  
+**If a constraint says NEVER, that means never.**  
+**If something is unclear, ask before implementing.**
 
-**Your job is to follow this blueprint precisely, not to improve upon it.**
+Your job is to follow this blueprint precisely, not to improve upon it. The user has already thought through the architecture, constraints, and edge cases.
 
-The user has thought through the architecture, constraints, and edge cases. Trust the spec.
+Trust the spec. Build what's specified. Nothing more, nothing less.
